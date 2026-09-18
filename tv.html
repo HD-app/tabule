@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Tabule - Kostky</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+        body {
+            background: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            font-size: 3rem;
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+        }
+        .scoreboard {
+            width: 100%;
+            max-width: 1400px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .card {
+            background: #1e293b;
+            border: 3px solid #334155;
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+        .card.eliminated {
+            border-color: #ef4444;
+            background: #2a1215;
+        }
+        .name {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+        .score {
+            font-size: 5rem;
+            font-weight: 900;
+            color: #38bdf8;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 15px;
+        }
+        
+        /* Zvýraznění nul a stavu vypadnutí */
+        .zero-badge {
+            background: #ef4444;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            animation: pulse 1.5s infinite;
+        }
+        .eliminated-badge {
+            background: #dc2626;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        /* Historie hodů v kolech */
+        .history-title {
+            font-size: 0.9rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            margin-bottom: 8px;
+            border-top: 1px solid #334155;
+            padding-top: 10px;
+        }
+        .history-list {
+            max-height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 5px;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            background: #0f172a;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #cbd5e1;
+        }
+        .history-item.is-zero {
+            background: #450a0a;
+            color: #fca5a5;
+            font-weight: bold;
+            border: 1px solid #991b1b;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>VÝSLEDKOVÁ TABULE</h1>
+    <div class="scoreboard" id="board">Načítání výsledků...</div>
+
+    <script>
+        const FIREBASE_URL = 'https://klubac-laser-game-default-rtdb.europe-west1.firebasedatabase.app/hra.json';
+
+        // Vypočítá počet nul za sebou od konce historie
+        function getConsecutiveZeros(history) {
+            if (!history || !Array.isArray(history)) return 0;
+            let zeros = 0;
+            for (let i = history.length - 1; i >= 0; i--) {
+                if (Number(history[i]) === 0) {
+                    zeros++;
+                } else {
+                    break;
+                }
+            }
+            return zeros;
+        }
+
+        async function fetchScore() {
+            try {
+                const res = await fetch(FIREBASE_URL);
+                if (!res.ok) return;
+                const players = await res.json();
+                
+                if (players && Array.isArray(players) && players.length > 0) {
+                    const board = document.getElementById('board');
+                    board.innerHTML = players.map(p => {
+                        const history = p.history || [];
+                        const consecutiveZeros = getConsecutiveZeros(history);
+                        const isEliminated = consecutiveZeros >= 3;
+
+                        // Vygenerování řádků s historií kol
+                        const historyHtml = history.length > 0 
+                            ? history.map((pts, index) => {
+                                const isZero = Number(pts) === 0;
+                                return `
+                                    <div class="history-item ${isZero ? 'is-zero' : ''}">
+                                        <span>${index + 1}. kolo:</span>
+                                        <span>${isZero ? '0 (NULA)' : '+' + pts}</span>
+                                    </div>
+                                `;
+                            }).reverse().join('')
+                            : '<div style="color: #475569; font-size: 0.9rem;">Zatím žádné hody</div>';
+
+                        // Odznak pro nuly / vypadnutí
+                        let statusBadge = '';
+                        if (isEliminated) {
+                            statusBadge = `<div class="eliminated-badge">❌ VYPADL (3× 0)</div>`;
+                        } else if (consecutiveZeros > 0) {
+                            statusBadge = `<div class="zero-badge">⚠️ Nula za sebou: ${consecutiveZeros}×</div>`;
+                        }
+
+                        return `
+                            <div class="card ${isEliminated ? 'eliminated' : ''}">
+                                <div>
+                                    <div class="name">${p.name}</div>
+                                    <div class="score">${p.score}</div>
+                                    ${statusBadge}
+                                </div>
+                                <div>
+                                    <div class="history-title">Přehled kol</div>
+                                    <div class="history-list">
+                                        ${historyHtml}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (e) {
+                console.log("Čekání na data...");
+            }
+        }
+
+        setInterval(fetchScore, 800);
+        fetchScore();
+    </script>
+</body>
+</html>
