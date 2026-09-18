@@ -14,11 +14,18 @@
             --border: #334155;
             --active-border: #22c55e;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 15px; max-width: 650px; margin: 0 auto; padding-bottom: 50px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            padding: 15px; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding-bottom: 50px; 
+        }
         
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        h2 { color: var(--accent); }
+        h2 { color: var(--accent); font-size: 1.5rem; }
         
         google-cast-launcher {
             --connected-color: var(--accent);
@@ -26,12 +33,19 @@
             width: 38px; height: 38px; cursor: pointer;
         }
 
-        /* Seznam hráčů */
-        .players-list { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
+        /* Seznam hráčů nahoře */
+        .players-list { 
+            display: flex; 
+            gap: 10px; 
+            overflow-x: auto; 
+            padding-bottom: 10px; 
+            margin-bottom: 15px; 
+            -webkit-overflow-scrolling: touch;
+        }
         .player-chip {
             background: var(--card); border: 2px solid var(--border); border-radius: 12px;
-            padding: 10px 15px; min-width: 140px; text-align: center; position: relative; flex-shrink: 0;
-            transition: all 0.2s;
+            padding: 10px 15px; min-width: 130px; text-align: center; position: relative; flex-shrink: 0;
+            transition: all 0.2s; cursor: pointer;
         }
         .player-chip.active {
             border-color: var(--active-border); background: #14532d;
@@ -49,31 +63,65 @@
             background: var(--card); border: 2px solid var(--accent); border-radius: 16px;
             padding: 15px; margin-bottom: 20px; text-align: center;
         }
-        .turn-title { font-size: 1.1rem; color: #94a3b8; }
+        .turn-title { font-size: 1rem; color: #94a3b8; font-weight: bold; }
         .turn-player-name { font-size: 1.8rem; font-weight: 900; color: var(--accent); }
-        .turn-score-preview { font-size: 3.5rem; font-weight: 900; color: #4ade80; margin: 5px 0; }
+        .turn-score-preview { font-size: 3.2rem; font-weight: 900; color: #4ade80; margin: 5px 0; }
         
         .action-row { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-confirm { flex: 2; background: #22c55e; color: #000; font-weight: 900; font-size: 1.2rem; padding: 14px; border: none; border-radius: 10px; cursor: pointer; }
-        .btn-zero { flex: 1; background: #ef4444; color: #fff; font-weight: bold; font-size: 1rem; padding: 14px; border: none; border-radius: 10px; cursor: pointer; }
-        .btn-reset-turn { background: #334155; color: #fff; padding: 10px; border: none; border-radius: 8px; margin-top: 8px; font-size: 0.85rem; cursor: pointer; }
+        .btn-confirm { 
+            flex: 2; background: #22c55e; color: #000; font-weight: 900; font-size: 1.1rem; 
+            padding: 14px 8px; border: none; border-radius: 10px; cursor: pointer; 
+            transition: opacity 0.1s;
+        }
+        .btn-zero { 
+            flex: 1; background: #ef4444; color: #fff; font-weight: bold; font-size: 1rem; 
+            padding: 14px 8px; border: none; border-radius: 10px; cursor: pointer; 
+            transition: opacity 0.1s;
+        }
+        .btn-confirm:active, .btn-zero:active { opacity: 0.8; }
+        .btn-reset-turn { 
+            background: #334155; color: #fff; padding: 10px 15px; border: none; 
+            border-radius: 8px; margin-top: 12px; font-size: 0.85rem; cursor: pointer; 
+            width: 100%; max-width: 300px;
+        }
 
-        /* Tlačítka kombinací */
-        .combo-section-title { font-size: 1rem; color: var(--accent); margin: 15px 0 8px 0; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
-        .combo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+        /* Responzivní mřížka pro tlačítka kombinací */
+        .combo-section-title { 
+            font-size: 1rem; color: var(--accent); margin: 20px 0 8px 0; 
+            text-transform: uppercase; letter-spacing: 1px; font-weight: bold; 
+        }
+        
+        .combo-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); /* 2 sloupce na mobilu */
+            gap: 8px; 
+        }
+
+        @media (min-width: 600px) {
+            .combo-grid {
+                grid-template-columns: repeat(4, 1fr); /* 4 sloupce na PC a tabletech */
+            }
+        }
+
         .btn-combo {
             background: #1e293b; border: 1px solid var(--border); color: var(--text);
-            padding: 10px 6px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+            padding: 12px 6px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: background 0.1s;
+            transition: background 0.1s, transform 0.05s; min-height: 60px;
         }
-        .btn-combo:active { background: var(--accent); color: #000; }
+        .btn-combo:active { background: var(--accent); color: #000; transform: scale(0.98); }
+        .btn-combo:active .pts { color: #000; }
         .btn-combo .pts { color: #38bdf8; font-weight: 800; font-size: 0.95rem; margin-top: 2px; }
 
         .controls { display: flex; gap: 10px; margin-top: 25px; }
         .btn-sec { flex: 1; background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .btn-danger { color: #f87171; border-color: #7f1d1d; }
         .status { text-align: center; font-size: 0.85rem; color: var(--accent); margin-top: 15px; }
+
+        @media (max-width: 400px) {
+            .action-row { flex-direction: column; }
+            .btn-confirm, .btn-zero { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -102,49 +150,49 @@
     <!-- Tlačítka podle tabulky kostek -->
     <div class="combo-section-title">🎲 Jednotlivé kostky</div>
     <div class="combo-grid">
-        <button class="btn-combo" onclick="addCombo(100)">Samostatná 1<span class="pts">+100 b.</span></button>[span_2](start_span)[span_2](end_span)
-        <button class="btn-combo" onclick="addCombo(50)">Samostatná 5<span class="pts">+50 b.</span></button>[span_3](start_span)[span_3](end_span)
+        <button class="btn-combo" onclick="addCombo(100)">Samostatná 1<span class="pts">+100 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(50)">Samostatná 5<span class="pts">+50 b.</span></button>
     </div>
 
     <div class="combo-section-title">🎲 Postupky a Párů</div>
     <div class="combo-grid">
-        <button class="btn-combo" onclick="addCombo(500)">Malá postupka<span class="pts">+500 b.</span></button>[span_4](start_span)[span_4](end_span)
-        <button class="btn-combo" onclick="addCombo(750)">Velká postupka<span class="pts">+750 b.</span></button>[span_5](start_span)[span_5](end_span)
-        <button class="btn-combo" onclick="addCombo(1500)">Kompletní postupka<span class="pts">+1500 b.</span></button>[span_6](start_span)[span_6](end_span)
-        <button class="btn-combo" onclick="addCombo(750)">Tři páry<span class="pts">+750 b.</span></button>[span_7](start_span)[span_7](end_span)
+        <button class="btn-combo" onclick="addCombo(500)">Malá postupka<span class="pts">+500 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(750)">Velká postupka<span class="pts">+750 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(1500)">Kompletní postupka<span class="pts">+1500 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(750)">Tři páry<span class="pts">+750 b.</span></button>
     </div>
 
     <div class="combo-section-title">🎲 Počet stejných čísel</div>
     <div class="combo-grid">
-        <button class="btn-combo" onclick="addCombo(1000)">3x Jednička<span class="pts">+1000 b.</span></button>[span_8](start_span)[span_8](end_span)
-        <button class="btn-combo" onclick="addCombo(2000)">4x Jednička<span class="pts">+2000 b.</span></button>[span_9](start_span)[span_9](end_span)
-        <button class="btn-combo" onclick="addCombo(4000)">5x Jednička<span class="pts">+4000 b.</span></button>[span_10](start_span)[span_10](end_span)
-        <button class="btn-combo" onclick="addCombo(8000)">6x Jednička<span class="pts">+8000 b.</span></button>[span_11](start_span)[span_11](end_span)
+        <button class="btn-combo" onclick="addCombo(1000)">3x Jednička<span class="pts">+1000 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(2000)">4x Jednička<span class="pts">+2000 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(4000)">5x Jednička<span class="pts">+4000 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(8000)">6x Jednička<span class="pts">+8000 b.</span></button>
 
-        <button class="btn-combo" onclick="addCombo(200)">3x Dvojka<span class="pts">+200 b.</span></button>[span_12](start_span)[span_12](end_span)
-        <button class="btn-combo" onclick="addCombo(400)">4x Dvojka<span class="pts">+400 b.</span></button>[span_13](start_span)[span_13](end_span)
-        <button class="btn-combo" onclick="addCombo(800)">5x Dvojka<span class="pts">+800 b.</span></button>[span_14](start_span)[span_14](end_span)
-        <button class="btn-combo" onclick="addCombo(1600)">6x Dvojka<span class="pts">+1600 b.</span></button>[span_15](start_span)[span_15](end_span)
+        <button class="btn-combo" onclick="addCombo(200)">3x Dvojka<span class="pts">+200 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(400)">4x Dvojka<span class="pts">+400 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(800)">5x Dvojka<span class="pts">+800 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(1600)">6x Dvojka<span class="pts">+1600 b.</span></button>
 
-        <button class="btn-combo" onclick="addCombo(300)">3x Trojka<span class="pts">+300 b.</span></button>[span_16](start_span)[span_16](end_span)
-        <button class="btn-combo" onclick="addCombo(600)">4x Trojka<span class="pts">+600 b.</span></button>[span_17](start_span)[span_17](end_span)
-        <button class="btn-combo" onclick="addCombo(1200)">5x Trojka<span class="pts">+1200 b.</span></button>[span_18](start_span)[span_18](end_span)
-        <button class="btn-combo" onclick="addCombo(2400)">6x Trojka<span class="pts">+2400 b.</span></button>[span_19](start_span)[span_19](end_span)
+        <button class="btn-combo" onclick="addCombo(300)">3x Trojka<span class="pts">+300 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(600)">4x Trojka<span class="pts">+600 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(1200)">5x Trojka<span class="pts">+1200 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(2400)">6x Trojka<span class="pts">+2400 b.</span></button>
 
-        <button class="btn-combo" onclick="addCombo(400)">3x Čtyřka<span class="pts">+400 b.</span></button>[span_20](start_span)[span_20](end_span)
-        <button class="btn-combo" onclick="addCombo(800)">4x Čtyřka<span class="pts">+800 b.</span></button>[span_21](start_span)[span_21](end_span)
-        <button class="btn-combo" onclick="addCombo(1600)">5x Čtyřka<span class="pts">+1600 b.</span></button>[span_22](start_span)[span_22](end_span)
-        <button class="btn-combo" onclick="addCombo(3200)">6x Čtyřka<span class="pts">+3200 b.</span></button>[span_23](start_span)[span_23](end_span)
+        <button class="btn-combo" onclick="addCombo(400)">3x Čtyřka<span class="pts">+400 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(800)">4x Čtyřka<span class="pts">+800 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(1600)">5x Čtyřka<span class="pts">+1600 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(3200)">6x Čtyřka<span class="pts">+3200 b.</span></button>
 
-        <button class="btn-combo" onclick="addCombo(500)">3x Pětka<span class="pts">+500 b.</span></button>[span_24](start_span)[span_24](end_span)
-        <button class="btn-combo" onclick="addCombo(1000)">4x Pětka<span class="pts">+1000 b.</span></button>[span_25](start_span)[span_25](end_span)
-        <button class="btn-combo" onclick="addCombo(2000)">5x Pětka<span class="pts">+2000 b.</span></button>[span_26](start_span)[span_26](end_span)
-        <button class="btn-combo" onclick="addCombo(4000)">6x Pětka<span class="pts">+4000 b.</span></button>[span_27](start_span)[span_27](end_span)
+        <button class="btn-combo" onclick="addCombo(500)">3x Pětka<span class="pts">+500 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(1000)">4x Pětka<span class="pts">+1000 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(2000)">5x Pětka<span class="pts">+2000 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(4000)">6x Pětka<span class="pts">+4000 b.</span></button>
 
-        <button class="btn-combo" onclick="addCombo(600)">3x Šestka<span class="pts">+600 b.</span></button>[span_28](start_span)[span_28](end_span)
-        <button class="btn-combo" onclick="addCombo(1200)">4x Šestka<span class="pts">+1200 b.</span></button>[span_29](start_span)[span_29](end_span)
-        <button class="btn-combo" onclick="addCombo(2400)">5x Šestka<span class="pts">+2400 b.</span></button>[span_30](start_span)[span_30](end_span)
-        <button class="btn-combo" onclick="addCombo(4800)">6x Šestka<span class="pts">+4800 b.</span></button>[span_31](start_span)[span_31](end_span)
+        <button class="btn-combo" onclick="addCombo(600)">3x Šestka<span class="pts">+600 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(1200)">4x Šestka<span class="pts">+1200 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(2400)">5x Šestka<span class="pts">+2400 b.</span></button>
+        <button class="btn-combo" onclick="addCombo(4800)">6x Šestka<span class="pts">+4800 b.</span></button>
     </div>
 
     <div class="controls">
@@ -196,11 +244,9 @@
         }
 
         function render() {
-            // Bezpečnostní kontrola indexu aktivního hráče
             if (activePlayerIndex >= players.length) activePlayerIndex = 0;
             const activePlayer = players[activePlayerIndex];
 
-            // Render horního seznamu hráčů
             document.getElementById('playersList').innerHTML = players.map((p, idx) => `
                 <div class="player-chip ${idx === activePlayerIndex ? 'active' : ''}" onclick="selectPlayer(${idx})">
                     <input type="text" class="name-input" value="${p.name}" onchange="updateName(${p.id}, this.value)" onclick="event.stopPropagation()">
@@ -209,7 +255,6 @@
                 </div>
             `).join('');
 
-            // Aktualizace panelu tahu
             document.getElementById('activePlayerName').innerText = activePlayer ? activePlayer.name : '';
             document.getElementById('turnScore').innerText = `${currentTurnPoints} b.`;
         }
@@ -228,7 +273,7 @@
             const player = players[activePlayerIndex];
             if (player) {
                 if (!player.history) player.history = [];
-                player.history.push(0); // Zaznamenání nulového hodu do historie
+                player.history.push(0);
                 currentTurnPoints = 0;
                 nextTurn();
                 sync();
@@ -283,4 +328,4 @@
         loadInitial();
     </script>
 </body>
-</h
+</html>
